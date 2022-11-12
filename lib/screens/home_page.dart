@@ -3,6 +3,8 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:path/path.dart';
 
+import '../model/notes.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -13,6 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TextEditingController txtTitle = TextEditingController();
   TextEditingController txtDetail = TextEditingController();
+  List<Notes> lstNotes = <Notes>[];
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +60,30 @@ class _HomePageState extends State<HomePage> {
                   ),
                 )
               ],
-            )
+            ),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: lstNotes.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: ListTile(
+                        onTap: () {},
+                        title: Text(lstNotes[index].title!),
+                        subtitle: Text(lstNotes[index].description.toString()),
+                        trailing:
+                            // IconButton(icon: Icon(Icons.delete),
+                            //  onPressed: (){
+
+                            //  },
+                            // )
+                            GestureDetector(
+                          onTap: () {},
+                          child: Icon(Icons.delete),
+                        ),
+                      ),
+                    );
+                  }),
+            ),
           ],
         ),
       ),
