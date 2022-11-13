@@ -1,6 +1,8 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../model/notes.dart';
+
 class DataBaseHelper {
   static Database? _database;
 
@@ -23,5 +25,31 @@ class DataBaseHelper {
   void createDb(Database db, int version) async {
     await db.execute(
         "Create table $notesTable ($clmnId integer primary key,$clmnTitle text ,$clmnDescription text) ");
+  }
+
+  //Crud methods
+
+  Future<int> insert(Notes note) async {
+    Database? db = await database;
+
+    var result = await db!.insert(notesTable, note.toMap());
+    return result;
+  }
+
+  Future<int> delete(int id) async {
+    Database? db = await database;
+
+    var result = await db!.rawDelete("delete from $notesTable where id=$id");
+
+    return result;
+  }
+
+  Future<int> update(Notes note) async {
+    Database? db = await database;
+
+    var result = await db!
+        .update(notesTable, note.toMap(), where: "id=?", whereArgs: [note.id]);
+
+    return result;
   }
 }
