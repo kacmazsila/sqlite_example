@@ -7,8 +7,9 @@ import 'package:sqlite_example/utils/dbHelper.dart';
 import '../model/notes.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.personId});
 
+  final int personId;
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -125,7 +126,8 @@ class _HomePageState extends State<HomePage> {
 
   saveNote() {
     if (txtTitle.text.isNotEmpty) {
-      Notes note = Notes(txtTitle.text.toString(), txtDetail.text.toString());
+      Notes note = Notes(
+          txtTitle.text.toString(), txtDetail.text.toString(), widget.personId);
       dataSave(note);
     }
   }
@@ -141,8 +143,8 @@ class _HomePageState extends State<HomePage> {
 
   updateNote() {
     if (selectedId > 0) {
-      update(Notes.withId(
-          selectedId, txtTitle.text.toString(), txtDetail.text.toString()));
+      update(Notes.withId(selectedId, txtTitle.text.toString(),
+          txtDetail.text.toString(), widget.personId));
     }
   }
 

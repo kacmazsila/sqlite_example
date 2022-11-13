@@ -4,9 +4,9 @@ class Notes {
   String? description;
   int? personId;
 
-  Notes(this.title, this.description);
+  Notes(this.title, this.description, this.personId);
 
-  Notes.withId(this.id, this.title, this.description);
+  Notes.withId(this.id, this.title, this.description, this.personId);
 
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();

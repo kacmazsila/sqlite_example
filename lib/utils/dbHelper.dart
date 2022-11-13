@@ -30,7 +30,7 @@ class DataBaseHelper {
 
   void createDb(Database db, int version) async {
     await db.execute(
-        "Create table $notesTable ($clmnId integer primary key,$clmnPersonId integer foreign key,$clmnTitle text ,$clmnDescription text) ");
+        "Create table $notesTable ($clmnId integer primary key,$clmnPersonId integer ,$clmnTitle text ,$clmnDescription text) ");
     await db.execute(
         "CREATE TABLE $personTable ($clmnId integer primary key,$clmnName text,$clmnLastName text , $clmnTitle text)");
   }
