@@ -1,5 +1,6 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqlite_example/model/Person.dart';
 
 import '../model/notes.dart';
 
@@ -7,9 +8,14 @@ class DataBaseHelper {
   static Database? _database;
 
   String notesTable = "notes";
+  String personTable = "person";
   String clmnId = "id";
   String clmnTitle = "title";
   String clmnDescription = "description";
+  String clmnPersonId = "personId";
+
+  String clmnName = "name";
+  String clmnLastName = "lastname";
 
   Future<Database?> get database async {
     _database ??= await initializeDatabase();
@@ -24,7 +30,9 @@ class DataBaseHelper {
 
   void createDb(Database db, int version) async {
     await db.execute(
-        "Create table $notesTable ($clmnId integer primary key,$clmnTitle text ,$clmnDescription text) ");
+        "Create table $notesTable ($clmnId integer primary key,$clmnPersonId integer foreign key,$clmnTitle text ,$clmnDescription text) ");
+    await db.execute(
+        "CREATE TABLE $personTable ($clmnId integer primary key,$clmnName text,$clmnLastName text , $clmnTitle text)");
   }
 
   //Crud methods
@@ -71,5 +79,40 @@ class DataBaseHelper {
     }
 
     return lstnotes;
+  }
+
+  Future<int> insertPerson(Person person) async {
+    Database? db = await database;
+    int result = await db!.insert(personTable, person.toMap());
+
+    return result;
+  }
+
+  Future<int> updatePerson(Person person) async {
+    Database? db = await database;
+    int result = await db!.update(personTable, person.toMap(),
+        where: "$clmnId=?", whereArgs: [person.id]);
+
+    return result;
+  }
+
+  Future<int> deletePerson(int id) async {
+    Database? db = await database;
+    int result = await db!.delete(personTable, where: "id=?", whereArgs: [id]);
+
+    return result;
+  }
+
+  Future<List<Person>> getAllPerson() async {
+    Database? db = await database;
+    List<Person> lstPerson = <Person>[];
+
+    var result = await db!.query(personTable);
+
+    for (var item in result) {
+      lstPerson.add(Person.getMap(item));
+    }
+
+    return lstPerson;
   }
 }

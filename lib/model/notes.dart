@@ -2,6 +2,7 @@ class Notes {
   int? id;
   String? title;
   String? description;
+  int? personId;
 
   Notes(this.title, this.description);
 
@@ -13,6 +14,7 @@ class Notes {
     map["id"] = id;
     map["title"] = title;
     map["description"] = description;
+    map["personId"] = personId;
 
     return map;
   }
@@ -21,5 +23,6 @@ class Notes {
     id = map["id"];
     title = map["title"];
     description = map["description"];
+    personId = map["personId"];
   }
 }
