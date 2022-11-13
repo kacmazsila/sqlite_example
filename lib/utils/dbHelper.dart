@@ -50,6 +50,8 @@ class DataBaseHelper {
     var result = await db!
         .update(notesTable, note.toMap(), where: "id=?", whereArgs: [note.id]);
 
+    //db.rawUpdate("UPDATE $notesTable set title=? where Id=?", [note.title, note.id]);
+    //update notes set title="sila" ,description="ders"  where Id=4
     return result;
   }
 

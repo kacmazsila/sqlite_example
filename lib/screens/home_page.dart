@@ -20,17 +20,21 @@ class _HomePageState extends State<HomePage> {
   TextEditingController txtDetail = TextEditingController();
   List<Notes> lstNotes = <Notes>[];
 
+  int selectedId = -1;
+
   @override
   void initState() {
     super.initState();
-
-    getNotes();
+    setState(() {
+      getNotes();
+    });
   }
 
   void getNotes() async {
     List<Notes> noteFuture = await dbHelper.getAllNotes();
-
-    lstNotes = noteFuture;
+    setState(() {
+      lstNotes = noteFuture;
+    });
   }
 
   @override
@@ -62,8 +66,7 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: saveNote(),
-                  onLongPress: saveNote(),
+                  onPressed: saveNote,
                   child: const Text('Kaydet'),
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.green),
@@ -85,7 +88,15 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (context, index) {
                           return Card(
                             child: ListTile(
-                              onTap: () {},
+                              onTap: () {
+                                setState(() {
+                                  txtTitle.text =
+                                      lstNotes[index].title.toString();
+                                  txtDetail.text =
+                                      lstNotes[index].description.toString();
+                                  selectedId = lstNotes[index].id!;
+                                });
+                              },
                               title: Text(lstNotes[index].title!),
                               subtitle:
                                   Text(lstNotes[index].description.toString()),
@@ -96,7 +107,9 @@ class _HomePageState extends State<HomePage> {
                                   //  },
                                   // )
                                   GestureDetector(
-                                onTap: () {},
+                                onTap: () {
+                                  deleteNote(lstNotes[index].id!);
+                                },
                                 child: Icon(Icons.delete),
                               ),
                             ),
@@ -121,8 +134,36 @@ class _HomePageState extends State<HomePage> {
     await dbHelper.insert(note);
     setState(() {
       getNotes();
+      txtTitle.text = "";
+      txtDetail.text = "";
     });
   }
 
-  updateNote() {}
+  updateNote() {
+    if (selectedId > 0) {
+      update(Notes.withId(
+          selectedId, txtTitle.text.toString(), txtDetail.text.toString()));
+    }
+  }
+
+  Future<void> update(Notes note) async {
+    await dbHelper.update(note);
+    setState(() {
+      getNotes();
+      txtDetail.text = "";
+      txtTitle.text = "";
+      selectedId = -1;
+    });
+  }
+
+  deleteNote(int id) {
+    delete(id);
+  }
+
+  Future<void> delete(int id) async {
+    await dbHelper.delete(id);
+    setState(() {
+      getNotes();
+    });
+  }
 }
