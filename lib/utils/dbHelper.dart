@@ -52,4 +52,22 @@ class DataBaseHelper {
 
     return result;
   }
+
+  Future<List<Notes>> getAllNotes() async {
+    Database? db = await database;
+
+    var result = await db!.query(notesTable);
+    //select * from notes
+
+    // return List.generate(result.length, (i) {
+    //   return Notes.fromMap(result[i]);
+    // });
+
+    List<Notes> lstnotes = <Notes>[];
+    for (var item in result) {
+      lstnotes.add(Notes.fromMap(item));
+    }
+
+    return lstnotes;
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:path/path.dart';
+import 'package:sqlite_example/utils/dbHelper.dart';
 
 import '../model/notes.dart';
 
@@ -13,9 +14,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  DataBaseHelper dbHelper = DataBaseHelper();
+
   TextEditingController txtTitle = TextEditingController();
   TextEditingController txtDetail = TextEditingController();
   List<Notes> lstNotes = <Notes>[];
+
+  @override
+  void initState() {
+    super.initState();
+
+    getNotes();
+  }
+
+  void getNotes() async {
+    List<Notes> noteFuture = await dbHelper.getAllNotes();
+
+    lstNotes = noteFuture;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +63,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 ElevatedButton(
                   onPressed: saveNote(),
+                  onLongPress: saveNote(),
                   child: const Text('Kaydet'),
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.green),
@@ -61,36 +78,51 @@ class _HomePageState extends State<HomePage> {
                 )
               ],
             ),
-            Expanded(
-              child: ListView.builder(
-                  itemCount: lstNotes.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: ListTile(
-                        onTap: () {},
-                        title: Text(lstNotes[index].title!),
-                        subtitle: Text(lstNotes[index].description.toString()),
-                        trailing:
-                            // IconButton(icon: Icon(Icons.delete),
-                            //  onPressed: (){
+            lstNotes.isNotEmpty
+                ? Expanded(
+                    child: ListView.builder(
+                        itemCount: lstNotes.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            child: ListTile(
+                              onTap: () {},
+                              title: Text(lstNotes[index].title!),
+                              subtitle:
+                                  Text(lstNotes[index].description.toString()),
+                              trailing:
+                                  // IconButton(icon: Icon(Icons.delete),
+                                  //  onPressed: (){
 
-                            //  },
-                            // )
-                            GestureDetector(
-                          onTap: () {},
-                          child: Icon(Icons.delete),
-                        ),
-                      ),
-                    );
-                  }),
-            ),
+                                  //  },
+                                  // )
+                                  GestureDetector(
+                                onTap: () {},
+                                child: Icon(Icons.delete),
+                              ),
+                            ),
+                          );
+                        }),
+                  )
+                : Card(),
           ],
         ),
       ),
     );
   }
 
-  saveNote() {}
+  saveNote() {
+    if (txtTitle.text.isNotEmpty) {
+      Notes note = Notes(txtTitle.text.toString(), txtDetail.text.toString());
+      dataSave(note);
+    }
+  }
+
+  dataSave(Notes note) async {
+    await dbHelper.insert(note);
+    setState(() {
+      getNotes();
+    });
+  }
 
   updateNote() {}
 }
